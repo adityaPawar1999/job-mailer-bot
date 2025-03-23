@@ -27,3 +27,47 @@ The **Automated Job Application Email Sender** is a Node.js script that streamli
 
 ## 📂 Project Structure  
 
+📁 job-email-sender
+├── 📄 index.js # Main script to send emails
+├── 📄 emailTemplates.js # Stores email templates for job roles
+├── 📄 hr_contacts.csv # HR email list with job roles (sample CSV)
+├── 📄 .env # Stores email credentials (not included in repo)
+├── 📄 README.md # Project documentation
+├── 📄 package.json # Node.js dependencies
+├── 📄 Resume.pdf # Example resume file
+
+
+
+---
+
+## ⚡ Setup Instructions  
+
+### 1️⃣ Clone the Repository  
+```sh
+git clone https://github.com/your-username/job-email-sender.git  
+cd job-email-sender  
+
+### 2️⃣ Install Dependencies
+npm install  
+
+### 3️⃣ Set Up Environment Variables
+Create a .env file in the root directory:
+
+EMAIL_USER=your-email@gmail.com  
+EMAIL_PASS=your-app-password
+
+### 4️⃣ Prepare CSV File
+Create hr_contacts.csv with this format:
+email,job_role,company  
+hr@example.com,Frontend Developer,TechCorp  
+poojahiring456@gmail.com,Backend Developer,  
+Company name is optional. If missing, "your organization" is used.
+
+### 5️⃣ Define Email Templates
+Modify emailTemplates.js to customize emails for each role.
+
+### 6️⃣ Add Resume Files
+Place resume PDFs in the project root and update resumeMapping in the script.
+
+🚀 How to Run
+node index.js  
