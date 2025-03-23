@@ -18,6 +18,7 @@ const transporter = nodemailer.createTransport({
 // Map job roles to specific resumes
 const resumeMapping = {
   "Frontend Developer": "Resume.pdf",
+  "Backend Developer": "Resume.pdf",
   "ERP Developer": "Resume.pdf",
   "Netsuite Developer": "Resume.pdf",
   "Full Stack Developer": "Resume.pdf",
@@ -35,18 +36,19 @@ const sendEmails = async () => {
         contacts.push({
           email: row.email.trim(),
           job_role: row.job_role.trim(),
-          company: row.company ? row.company.trim() : "your organization",
+          company: row.company ? row.company.trim() : "", // Optional company name
         });
       } else {
         console.error("⚠️ Skipping invalid row:", row);
       }
     })
     .on("end", async () => {
+      console.log(`📩 Total valid contacts: ${contacts.length}`);
       shuffleArray(contacts); // Randomize order to prevent pattern detection
+
       for (let contact of contacts) {
         await sendEmail(contact.email, contact.job_role, contact.company);
-        const getRandomDelay = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
-        await delay(getRandomDelay(15000, 30000)); 
+        await delay(getRandomDelay(15000, 30000)); // Wait before sending the next email
       }
       console.log(`✅ Total applications sent: ${count}`);
     });
@@ -70,13 +72,18 @@ const sendEmail = async (hrEmail, jobRole, companyName) => {
     return;
   }
 
-  // Personalize email with company name
-  let emailContent = emailTemplates[jobRole].replace("[Company Name]", companyName);
+  // Create dynamic subject
+  const subject = companyName
+    ? `Job Application for ${jobRole} at ${companyName}`
+    : `Job Application for ${jobRole}`;
+
+  // Personalize email with company name if available
+  let emailContent = emailTemplates[jobRole].replace("[Company Name]", companyName || "your company");
 
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: hrEmail,
-    subject: `Application for ${jobRole} at ${companyName}`,
+    subject: subject,
     text: emailContent,
     attachments: [
       {
@@ -88,7 +95,7 @@ const sendEmail = async (hrEmail, jobRole, companyName) => {
 
   try {
     await transporter.sendMail(mailOptions);
-    console.log(`✅ Email sent to ${hrEmail} (${companyName}) for ${jobRole}`);
+    console.log(`✅ Email sent to ${hrEmail} for ${jobRole} (${companyName || "No Company"})`);
     count++;
   } catch (error) {
     console.error(`❌ Error sending email to ${hrEmail}:`, error.message || error);
@@ -98,7 +105,7 @@ const sendEmail = async (hrEmail, jobRole, companyName) => {
 // Helper function to introduce a delay
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-// Helper function to get a random delay (5-10 seconds)
+// Helper function to get a random delay (15-30 seconds)
 const getRandomDelay = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
 
 // Helper function to shuffle contacts array
